@@ -1,0 +1,18 @@
+FROM debian:latest
+MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+
+RUN apt-get update && apt-get install -y \ 
+	gcc \
+	make \ 
+	git \
+	net-tools \
+	libpcap-dev \
+	vde2 \
+	libvdeplug2 \
+	libvdeplug2-dev \
+	nano
+
+RUN mkdir /simh-bin
+
+WORKDIR /workdir
+RUN git clone git://github.com/simh/simh
