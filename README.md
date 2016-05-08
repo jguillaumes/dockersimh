@@ -16,6 +16,7 @@ and will contain:
 - net-tools to manipulate the network stack
 - libpcap to enable certain features of simh networking
 - the nano editor to edit simh configuration files
+- The built simh binaries. See below for details. The default image will contain ```vax```and ```pdp11```.
 - A pair of example configuration files for VAX and PDP11 simulators.
 
 It will **not** contain any OS image for the simulators. 
