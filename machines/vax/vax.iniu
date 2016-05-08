@@ -1,0 +1,18 @@
+set cpu 64m		
+set cpu simhalt	
+set cpu idle=vms
+
+set console log=vax-console.log
+
+set rq0 ra81
+attach rq0 ./RA81.000
+
+SET XQ ENABLE
+SET XQ MAC=08:00:2B:09:00:01
+ATTACH XQ eth0
+
+set dz enable
+set dz 8b
+set dz lines=8
+att dz 2323
+
