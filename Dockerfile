@@ -9,14 +9,18 @@ RUN cd simh && \
     make ${buildsims} && \
     cp BIN/* /simh-bin
 
+
 ENV PATH /simh-bin:$PATH
 
 EXPOSE 2323
 RUN mkdir /machines
 VOLUME /machines
 
+WORKDIR /
+RUN rm -rf /workdir
+COPY startup.sh /startup.sh
+
 WORKDIR /machines
 COPY /machines /machines
-COPY startup.sh /startup.sh 
 
-ENTRYPOINT ["/startup.sh"]
+#ENTRYPOINT ["/startup.sh"]
