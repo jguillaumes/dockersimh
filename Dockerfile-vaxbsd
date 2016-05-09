@@ -1,0 +1,25 @@
+FROM jguillaumes/simh-base
+MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+
+WORKDIR /workdir
+
+RUN cd simh && \
+    git pull && \
+    make vax780 && \
+    cp BIN/* /simh-bin 
+
+ENV PATH /simh-bin:$PATH
+
+EXPOSE 2323
+RUN mkdir /machines
+VOLUME /machines
+
+WORKDIR /machines
+COPY /vaxbsd/vax780.ini /machines
+COPY /vaxbsd/boot42 /machines
+COPY /vaxbsd/RA81.000.gz /machines
+COPY /vaxbsd/startup.sh /startup.sh 
+
+ENTRYPOINT ["/startup.sh"]
+
+
