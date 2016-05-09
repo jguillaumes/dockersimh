@@ -6,7 +6,7 @@ This software is a hobby project, done in my free time just to amuse myself. It 
 
 ## Repository and image contents
 
-This repository contains the files needed to build a containerized version of simh. The resulting docker image will be debian-based
+This repository contains the files needed to build a containerized version of simh. The resulting docker images will be debian-based
 and will contain:
 
 - The gcc compiler, needed to build simh
@@ -19,9 +19,13 @@ and will contain:
 - The built simh binaries. See below for details. The default image will contain ```vax```and ```pdp11```.
 - A pair of example configuration files for VAX and PDP11 simulators.
 
-It will **not** contain any OS image for the simulators. 
+There are three images which can be built from the contents of this repository:
 
-## Building the image
+- simh-base: mandatory base image from which are built the rest
+- simh-vax: container with the vax and pdp11 simulators, ready to run, **does not** include any OS image
+- simh-pdpbsd: container with the pdp11 simulator and a ready to run BSD 2.11 disk image.
+
+## Building the images
 
 To build the simh images, we will build first a "base" image with the needed packages and the simh source already cloned. 
 This will enable building different simh containers without incurring in the overhead of downloading again the needed packages. 
@@ -46,6 +50,12 @@ build the Altairs simulator you will issue:
 docker build -t <yourtag> --build-arg buildsims="altair altairz80" .
 ```
 
+To build the PDP-11 BSD image, you can issue:
+
+```
+docker build -t <yourtag> -f Dockerfile-pdpbsd .
+```
+
 ## Adding guest OS images and adjusting your configuration
 
 Everything under the ```machines``` subdirectory will be copied verbatim to the /machines directory in the container. This repository 
@@ -60,7 +70,7 @@ The image defines the /machines volume, which can be mounted in your containers 
 
 ## Using the built images
 
-### Default configuration
+### Default configuration (vax and pdp11 simulators)
 
 To create a container from the default image, you can issue this command:
 
@@ -75,7 +85,7 @@ To detach from the running container, use CTRL-P CTRL-Q. To reattach to a runnin
 
 To start a docker container, issue ```docker start <conainer_name>``` followed by ```docker attach```. 
 
-### Using an image and configuration from your host filesystem
+#### Using an image and configuration from your host filesystem
 
 You can use a directory in your host filesystem to store guest images and configurations. Remember ```/machines``` is a mountable volume, so you can do:
 
@@ -85,6 +95,18 @@ docker run --name <container_name> -p 2323:2323 -v <your_filesystem_path>:/machi
 
 This command will mount ```<your_filesystem_path>``` into /machines inside the container, so you can run your simulated machines using resources in the host. The optional parameter ```simulator``` allows you to start immediately a program instead of opening a bash shell,
 so your container will boot immediately into simh.
+
+### PDP-11 with BSD
+
+To run a container with the PDP-11 simulator and BSD 2.11, issue the following command:
+
+```
+docker run --name <container_name> -p 2323:2323 -it <your_image_tag_for_pdpbsd>
+```
+It will boot straight into BSD 2.11. You will have to press Enter to start the boot process, and CTRL-D to close the single user shell and boot into multiuser. This image has networking set up. Please change the configuration in /etc/netstart, /etc/hosts, /etc/networks and /etc/resolv.conf to match your setup.
+
+**Warning**: The image has a configured DNS server that will probably not be available in your network. During the boot process there are DNS requests, which will stall and wait until their timeout, so the boot can seem to be "hung". Please be patient, wait for the boot to finish and then fix /etc/resolv.conf. Alternatively, you can do from single user before allowing the boot to continue.
+
 
 ## Networking
 
