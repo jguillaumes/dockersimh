@@ -1,0 +1,34 @@
+FROM alpine:latest
+
+MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+
+ENV BUILDPKGS "git gcc libc-dev make vde2-dev libpcap-dev"
+ENV RUNPKGS "net-tools vde2 vde2-libs libpcap"
+
+RUN apk --update add $RUNPKGS && rm -rf /var/cache/apk/*
+
+WORKDIR /workdir
+
+RUN apk --update add --virtual build-dependencies $BUILDPKGS && \
+	git clone git://github.com/simh/simh.git && \
+	cd simh && \
+	sed -e "s/\$(error Retry your build without specifying USE_NETWORK=1)/# SUPRESSED /g" makefile > makefile2 && \
+	make LIBPATH=/usr/lib INCPATH=/usr/include USE_NETWORK=1 -f makefile2 && \
+	mkdir /simh-bin && cp BIN/* /simh-bin && \
+	apk del build-dependencies && \
+	rm -rf /workdir/simh \
+	rm -rf /var/cache/apk/*
+
+ENV PATH /simh-bin:$PATH
+
+EXPOSE 2323
+EXPOSE 2324
+EXPOSE 2325
+
+VOLUME /machines
+WORKDIR /machines
+
+RUN rm -rf /workdir
+
+ENTRYPOINT ["busybox", "sh"]
+
