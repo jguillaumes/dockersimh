@@ -25,7 +25,7 @@ The commands to build the images are as follows. Remember you can change the tag
 docker build -t jgullaumes/simh-allsims -f Dockerfile-allsims .
 docker build -t jgullaumes/simh-pdpbsd -f Dockerfile-pdpbsd .
 docker build -t jgullaumes/simh-vaxbsd -f Dockerfile-vaxbsd .
-docker build -t jgullaumes/simh-vax [--build-args="<simulator list>"] .
+docker build -t jgullaumes/simh-vax [--build-arg sims="<simulator list>"] .
 ```
 
 You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 pdp11"```.
