@@ -16,8 +16,8 @@ RUN apk --update add --virtual build-dependencies $BUILDPKGS && \
 	make LIBPATH=/usr/lib INCPATH=/usr/include USE_NETWORK=1 -f makefile2 && \
 	mkdir /simh-bin && cp BIN/* /simh-bin && \
 	apk del build-dependencies && \
-	rm -rf /workdir/simh \
-	rm -rf /var/cache/apk/*
+	rm -rf /workdir && \
+	rm -rf /var/cache/apk/* 
 
 ENV PATH /simh-bin:$PATH
 
@@ -28,7 +28,4 @@ EXPOSE 2325
 VOLUME /machines
 WORKDIR /machines
 
-RUN rm -rf /workdir
-
 ENTRYPOINT ["busybox", "sh"]
-

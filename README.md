@@ -6,59 +6,34 @@ This software is a hobby project, done in my free time just to amuse myself. It 
 
 ## Repository and image contents
 
-This repository contains the files needed to build a containerized version of simh. The resulting docker images will be debian-based
-and will contain:
+This repository contains files to build containerized versions of simh. There are several files available, which correspond to different images with different contents. At this moment, the list of Dockerfiles and images is:
 
-- The gcc compiler, needed to build simh
-- GNU Make
-- Git support
-- VDE support
-- net-tools to manipulate the network stack
-- libpcap to enable certain features of simh networking
-- the nano editor to edit simh configuration files
-- The built simh binaries. See below for details. The default image will contain ```vax```and ```pdp11```.
-- A pair of example configuration files for VAX and PDP11 simulators.
+- Dockerfile-allsims: Makes an image which contains the binaries for all the simh simulators. This image does not contain neither configuration samples nor OS image files.
+- Dockerfile-pdpbsd: Makes an image which contains the PDP-11 simulator and a ready to run BSD 2.11 image.
+- Dockerfile-vaxbsd: Makes an image which contains the VAX 11/780 simulator and a ready to run BSD 4.3 image.
+- Dockerfile: Makes an image which contains the PDP-11, VAX (Microvax 3900) and VAX780 simulators, with sample configuration files for PDP-11 and VAX and **no** image OS.
 
-There are three images which can be built from the contents of this repository:
-
-- simh-base: mandatory base image from which are built the rest
-- simh-vax: container with the vax and pdp11 simulators, ready to run, **does not** include any OS image
-- simh-pdpbsd: container with the pdp11 simulator and a ready to run BSD 2.11 disk image.
+The images are based upon the alpine Linux distribution. Alpine is a very lightweight distribution built around a statically linked busybox executable. The dockerfiles add to alpine the components needed to run and to build simh. The build time components are erased before completing the image to avoid bloating it.
 
 ## Building the images
 
-To build the simh images, we will build first a "base" image with the needed packages and the simh source already cloned. 
-This will enable building different simh containers without incurring in the overhead of downloading again the needed packages. 
-We will build the base image issuing this command:
-```
-docker build -t jguillaumes/simh-base -f Dockerfile-base .
-```
+You shoud build first the image from Dockerfile-allsims, since it is needed to build the other images. You can select any tag for the image, but please remember to update the other dockerfiles to reference the one you chose. The default is ```jguillaumes/simh-allsims```.
 
-You can change the tag name if you wish, but the you will have to modify the Dockerfile used to build simh images accordingly.
-
-Once you have built the base image, you can build any number of simh images. To do so, issue the command:
+The commands to build the images are as follows. Remember you can change the tags as you wish.
 
 ```
-docker build -t <yourtag> [--build-arg buildsims="<simulators to build>"] .
+docker build -t jgullaumes/simh-allsims -f Dockerfile-allsims .
+docker build -t jgullaumes/simh-pdpbsd -f Dockerfile-pdpbsd .
+docker build -t jgullaumes/simh-vaxbsd -f Dockerfile-vaxbsd .
+docker build -t jgullaumes/simh-vax [--build-args="<simulator list>"] .
 ```
 
-You can specify which simulators you want to build specifying the ```buildsims```argument, which should be a blank-separated list of
-make targers. The default value is ```"vax pdp11"```, so the Microvax 3900 and the PDP-11 simulators will be built. So if you want, for instance,  to
-build the Altairs simulator you will issue:
+You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 pdp11"```.
 
-```
-docker build -t <yourtag> --build-arg buildsims="altair altairz80" .
-```
 
-To build the PDP-11 BSD image, you can issue:
+## Adding guest OS images to simh-vax
 
-```
-docker build -t <yourtag> -f Dockerfile-pdpbsd .
-```
-
-## Adding guest OS images and adjusting your configuration
-
-Everything under the ```machines``` subdirectory will be copied verbatim to the /machines directory in the container. This repository 
+Everything under the ```machines``` subdirectory will be copied verbatim to the /machines directory in the container. This repository
 contains just two subdirectories, ```vax```and ```pdp11```, each one with a sample configuration file. You can add your own subdirectories,
 configuration files and disk images and those will be copied to the docker image.
 
@@ -70,22 +45,22 @@ The image defines the /machines volume, which can be mounted in your containers 
 
 ## Using the built images
 
-### Default configuration (vax and pdp11 simulators)
+### Default configuration (simh-vax)
 
 To create a container from the default image, you can issue this command:
 
 ```
-docker run --name <container_name> -p 2323:2323 -it <your_image_tag>
+docker run [--name <your_container_name>] -p 2323:2323 -it jguillaumes/simh-vax
 ```
-This will create a container using the contents of the ```machines``` subdirectory and will run a bash shell with that one set as
-default working directory. You can then setup your VAX or PDP11 guest using whatever means you have (probably using ```docker cp``` 
-to upload your distribution media or disk images into the container). 
+This will create a container using the contents of the ```machines``` subdirectory and will run a sh shell (busybox) with that one set as
+default working directory. You can then setup your VAX or PDP11 guest using whatever means you have (probably using ```docker cp```
+to upload your distribution media or disk images into the container).
 
 To detach from the running container, use CTRL-P CTRL-Q. To reattach to a running container use ```docker attach <container_namer>```. To stop the container you can use ```docker stop <container_name>``` from your host environment, but this is not recommended since you should shut down your guest OS properly. So please ```docker attach``` to your guest, ```RUN $SHUTUP```, ```@SYS$SYSTEM:SHUTDOWN```  or whatever your OS needs to shut down and then simply exit from simh and the bash shell to stop the container.
 
-To start a docker container, issue ```docker start <conainer_name>``` followed by ```docker attach```. 
+To start a docker container, issue ```docker start <container_name>``` followed by ```docker attach```.
 
-#### Using an image and configuration from your host filesystem
+### Using an image and configuration from your host filesystem
 
 You can use a directory in your host filesystem to store guest images and configurations. Remember ```/machines``` is a mountable volume, so you can do:
 
@@ -96,14 +71,18 @@ docker run --name <container_name> -p 2323:2323 -v <your_filesystem_path>:/machi
 This command will mount ```<your_filesystem_path>``` into /machines inside the container, so you can run your simulated machines using resources in the host. The optional parameter ```simulator``` allows you to start immediately a program instead of opening a bash shell,
 so your container will boot immediately into simh.
 
-### PDP-11 with BSD
+## PDP-11 or VAX with BSD
 
-To run a container with the PDP-11 simulator and BSD 2.11, issue the following command:
+To run a container with the PDP-11 or VAX780 simulator and BSD, issue the following command:
 
 ```
 docker run --name <container_name> -p 2323:2323 -it <your_image_tag_for_pdpbsd>
 ```
-It will boot straight into BSD 2.11. You will have to press Enter to start the boot process, and CTRL-D to close the single user shell and boot into multiuser. This image has networking set up. Please change the configuration in /etc/netstart, /etc/hosts, /etc/networks and /etc/resolv.conf to match your setup.
+It will boot straight into BSD.
+
+In the PDP-11 simulator you will have to press Enter to start the boot process, and CTRL-D to close the single user shell and boot into multiuser. This image has networking set up. Please change the configuration in /etc/netstart, /etc/hosts, /etc/networks and /etc/resolv.conf to match your setup.
+
+In the VAX simulator it will boot right until the ```login:``` prompt. The files you must adjust to your networking setup are /etc/rc.local, /etc/hosts, /etc/networks and /etc/resolv.conf.
 
 **Warning**: The image has a configured DNS server that will probably not be available in your network. During the boot process there are DNS requests, which will stall and wait until their timeout, so the boot can seem to be "hung". Please be patient, wait for the boot to finish and then fix /etc/resolv.conf. Alternatively, you can do from single user before allowing the boot to continue.
 
@@ -118,9 +97,4 @@ Please take note this does not currently work with the xhyve based beta release 
 
 ### DECNET
 
-The containers running inside the same docker-machine (or host) will see each other and will be able to communicate using DECNET. To enabe them to talk to the outside world you will need to use one of the several available methods (SIMH synchronous devices, Multinet-based DECNET-over-IP, vde under a ssh tunnel or the DECNET bridge program by Johnny Bilquist).
-
-
-
-
-
+The containers running inside the same docker-machine (or host) will see each other and will be able to communicate using DECNET. To enabe them to talk to the outside world you will need to use one of the several available methods (SIMH synchronous devices, Multinet-based DECNET-over-IP, vde under a ssh tunnel or the DECNET bridge program by Johnny Bilquist). You will have to EXPOSE additional ports to set up your chosen method.

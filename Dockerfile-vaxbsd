@@ -1,17 +1,12 @@
-FROM jguillaumes/simh-base
+FROM jguillaumes/simh-allsims
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
-
-WORKDIR /workdir
-
-RUN cd simh && \
-    git pull && \
-    make vax780 && \
-    cp BIN/* /simh-bin 
 
 ENV PATH /simh-bin:$PATH
 
+WORKDIR /workdir
+RUN cp /simh-bin/vax780 . && rm /simh-bin/* && cp vax780 /simh-bin
+
 EXPOSE 2323
-RUN mkdir /machines
 VOLUME /machines
 
 WORKDIR /machines
@@ -21,5 +16,3 @@ COPY /vaxbsd/RA81.000.gz /machines
 COPY /vaxbsd/startup.sh /startup.sh 
 
 ENTRYPOINT ["/startup.sh"]
-
-

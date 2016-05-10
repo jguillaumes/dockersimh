@@ -1,17 +1,13 @@
-FROM jguillaumes/simh-base
+FROM jguillaumes/simh-allsims
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
-
-WORKDIR /workdir
-
-RUN cd simh && \
-    git pull && \
-    make pdp11 && \
-    cp BIN/* /simh-bin
 
 ENV PATH /simh-bin:$PATH
 
+WORKDIR /workdir
+RUN cp /simh-bin/pdp11 . && rm /simh-bin/* && cp pdp11 /simh-bin
+
+
 EXPOSE 2323
-RUN mkdir /machines
 VOLUME /machines
 
 WORKDIR /machines
