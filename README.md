@@ -31,6 +31,7 @@ docker build -t jgullaumes/simh-vax [--build-args="<simulator list>"] .
 You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 pdp11"```.
 
 
+
 ## Adding guest OS images to simh-vax
 
 Everything under the ```machines``` subdirectory will be copied verbatim to the /machines directory in the container. This repository
@@ -98,3 +99,7 @@ Please take note this does not currently work with the xhyve based beta release 
 ### DECNET
 
 The containers running inside the same docker-machine (or host) will see each other and will be able to communicate using DECNET. To enabe them to talk to the outside world you will need to use one of the several available methods (SIMH synchronous devices, Multinet-based DECNET-over-IP, vde under a ssh tunnel or the DECNET bridge program by Johnny Bilquist). You will have to EXPOSE additional ports to set up your chosen method.
+
+## Bugs and annoyances
+
+Right now the simh simulator does not display its prompt. It works and accepts typed commands, but does not show neither the default ```sim>``` prompt nor any customized one you set.
