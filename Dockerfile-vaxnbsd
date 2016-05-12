@@ -10,6 +10,7 @@ WORKDIR /workdir
 RUN cp /simh-bin/$SIM . && rm /simh-bin/* && cp $SIM /simh-bin
 
 EXPOSE 2323
+EXPOSE 2324
 VOLUME /machines
 
 WORKDIR /machines

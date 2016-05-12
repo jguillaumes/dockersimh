@@ -8,6 +8,7 @@ RUN cp /simh-bin/pdp11 . && rm /simh-bin/* && cp pdp11 /simh-bin
 
 
 EXPOSE 2323
+EXPOSE 2324
 VOLUME /machines
 
 WORKDIR /machines

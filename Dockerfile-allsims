@@ -3,7 +3,7 @@ FROM alpine:latest
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
 ENV BUILDPKGS "git gcc libc-dev make vde2-dev libpcap-dev"
-ENV RUNPKGS "net-tools vde2 vde2-libs libpcap"
+ENV RUNPKGS "net-tools vde2 vde2-libs libpcap nano"
 
 RUN apk --update add $RUNPKGS && rm -rf /var/cache/apk/*
 
@@ -24,6 +24,7 @@ ENV PATH /simh-bin:$PATH
 EXPOSE 2323
 EXPOSE 2324
 EXPOSE 2325
+EXPOSE 2326
 
 VOLUME /machines
 WORKDIR /machines

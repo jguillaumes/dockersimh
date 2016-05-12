@@ -13,6 +13,11 @@ ENV PATH /simh-bin:$PATH
 
 VOLUME /machines
 
+EXPOSE 2323
+EXPOSE 2324
+EXPOSE 2325
+EXPOSE 2326
+
 WORKDIR /
 COPY startup.sh /startup.sh
 

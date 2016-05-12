@@ -7,6 +7,8 @@ WORKDIR /workdir
 RUN cp /simh-bin/vax780 . && rm /simh-bin/* && cp vax780 /simh-bin
 
 EXPOSE 2323
+EXPOSE 2324
+
 VOLUME /machines
 
 WORKDIR /machines

@@ -1,0 +1,21 @@
+FROM jguillaumes/simh-allsims
+MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+
+ENV PATH /simh-bin:$PATH
+ENV SIM pdp11
+ENV SIMDIR pdp11v7
+ENV OSIMAGE RP04.000.gz
+
+WORKDIR /workdir
+RUN cp /simh-bin/$SIM . && rm /simh-bin/* && cp $SIM /simh-bin
+
+EXPOSE 2323
+EXPOSE 2423
+VOLUME /machines
+
+WORKDIR /machines
+COPY /$SIMDIR/$SIM.ini /machines
+COPY /$SIMDIR/$OSIMAGE /machines
+COPY /$SIMDIR/startup.sh /startup.sh 
+
+ENTRYPOINT ["/startup.sh"]
