@@ -2,21 +2,27 @@ FROM jguillaumes/simh-allsims
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
 ENV PATH /simh-bin:$PATH
-ENV SIM vax
+ENV SIM vax8600
 ENV SIMDIR vaxnbsd
-ENV OSIMAGE RA90VHD.000.gz
+ENV OSIMAGE RAUSER.000.gz
 
 WORKDIR /workdir
-RUN cp /simh-bin/$SIM . && rm /simh-bin/* && cp $SIM /simh-bin
+RUN cp /simh-bin/$SIM . && \
+    rm /simh-bin/* && \
+    cp $SIM /simh-bin && \
+    mkdir /image
 
 EXPOSE 2323
 EXPOSE 2324
-VOLUME /machines
 
+WORKDIR /image
+COPY /$SIMDIR/$SIM.ini /image/
+COPY /$SIMDIR/*.gz     /image/
+COPY /$SIMDIR/*.txt    /image/
+COPY /$SIMDIR/startup.sh /startup.sh
+
+VOLUME /machines
 WORKDIR /machines
-COPY /$SIMDIR/$SIM.ini /machines
-COPY /$SIMDIR/$OSIMAGE /machines
-COPY /$SIMDIR/startup.sh /startup.sh 
+COPY /$SIMDIR/original-content /machines/
 
 ENTRYPOINT ["/startup.sh"]
-
