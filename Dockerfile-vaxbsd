@@ -2,19 +2,31 @@ FROM jguillaumes/simh-allsims
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
 ENV PATH /simh-bin:$PATH
-
-WORKDIR /workdir
-RUN cp /simh-bin/vax780 . && rm /simh-bin/* && cp vax780 /simh-bin
-
-EXPOSE 2323
-EXPOSE 2324
+ENV SIMULATOR vax780
+ENV SIMDIR vaxbsd
+ENV OSIMAGE  RA81.000.gz
+ENV OSIMAGE2 RA81VHD.001.gz
 
 VOLUME /machines
+WORKDIR /machines
+RUN cp /simh-bin/$SIMULATOR /machines/$SIMULATOR && \
+    rm /simh-bin/* && \
+    mv /machines/$SIMULATOR /simh-bin && \
+    mkdir /image
+
+EXPOSE 2323-2324
+
+WORKDIR /image
+COPY /$SIMDIR/$OSIMAGE       /image/
+COPY /$SIMDIR/*.txt          /image/
+COPY /$SIMDIR/$SIMULATOR.ini /image/
+COPY /$SIMDIR/startup.sh     /startup.sh
+COPY /$SIMDIR/original-content /machines
+
+COPY /$SIMDIR/$OSIMAGE2 /image/
+COPY /$SIMDIR/boot43    /image/
 
 WORKDIR /machines
-COPY /vaxbsd/vax780.ini /machines
-COPY /vaxbsd/boot42 /machines
-COPY /vaxbsd/RA81.000.gz /machines
-COPY /vaxbsd/startup.sh /startup.sh 
 
 ENTRYPOINT ["/startup.sh"]
+
