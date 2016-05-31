@@ -1,12 +1,44 @@
-#!/bin/sh
+#!/bin/sh 
 
-OSIMAGE=RAUSER.000
+OSIMAGE=RAUSER000.vhd
+PKGIMAGE=RAUSER001.vhd
+USRIMAGE=RAUSER002.vhd
+EMPIMAGE=RAUSEREMP.vhd.gz
 SIMULATOR=vax8600
 CONTSHELL="busybox sh"
 
+unpackstuff () {
+    if [ ! -f $1 ]; then
+	echo "Uncompressing $2..."
+	gunzip $1.gz
+    fi
+}
+
+provide_empty () {
+    if [ ! -f $1 ]; then
+	echo "Providing empty $2..."
+	cp $3 $1.gz
+	gunzip $1.gz
+    fi
+}
+    
+provision_and_run () {
+    cp -v /image/* .
+    unpackstuff $OSIMAGE "OS image file"
+    provide_empty $PKGIMAGE "/usr/pkgsrc disk" $EMPIMAGE
+    provide_empty $USRIMAGE "/usr/src disk" $EMPIMAGE
+    if [ -f $OSIMAGE -a -f $PKGIMAGE -a -f $USRIMAGE ]; then
+	echo "All images uncompressed, starting simulator..."
+	exec $SIMULATOR
+    else
+	echo "Some images are still missing... Dropping to shell."
+	exec $CONTSHELL
+    fi
+}
+
 cd /machines
 
-if [ -f $OSIMAGE ]; then
+if [ -f $OSIMAGE -a -f $PKGIMAGE -a -f $USRIMAGE ]; then
 	echo "Found uncompressed OS image file, starting simulator."
 	exec $SIMULATOR
 else
@@ -14,16 +46,7 @@ else
 	if [ "$SIMH_USE_CONTAINER" == "yes" ]; then
 	    echo "SIMH_USE_CONTAINER=$SIMH_USE_CONTAINER, using container storage"
 	    echo "Copying distribution files..."
-	    cp -v /image/* .
-	    if [ -f $OSIMAGE.gz ]; then
-		echo "Uncompressing OS image file..."
-		gunzip $OSIMAGE.gz
-		echo "OS image file uncompressed, starting simulator."
-		exec $SIMULATOR
-	    else
-		echo "Compressed image file (${OSIMAGE}.gz) missing!"
-		exec $CONTSHELL
-	    fi
+	    provision_and_run
 	else
 	    echo "================================================================"
 	    echo "= You have not mounted any external volume under /machines     ="
@@ -43,10 +66,6 @@ else
 	fi
     else
 	echo "Empty user container, providing initial OS image..."
-	cp -v /image/* .
-	echo "Uncompressing OS image file..."
-	gunzip $OSIMAGE.gz
-	echo "OS image file uncompressed, starting simulator."
-	exec $SIMULATOR
+	provision_and_run
     fi
 fi

@@ -2,8 +2,8 @@ FROM alpine:latest
 
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
-ENV BUILDPKGS "git gcc libc-dev make vde2-dev libpcap-dev"
-ENV RUNPKGS "net-tools vde2 vde2-libs libpcap nano"
+ENV BUILDPKGS "git gcc libc-dev make vde2-dev libpcap-dev linux-headers readline-dev"
+ENV RUNPKGS "net-tools vde2 vde2-libs libpcap nano readline bash"
 
 RUN apk --update add $RUNPKGS && rm -rf /var/cache/apk/*
 
@@ -21,10 +21,7 @@ RUN apk --update add --virtual build-dependencies $BUILDPKGS && \
 
 ENV PATH /simh-bin:$PATH
 
-EXPOSE 2323
-EXPOSE 2324
-EXPOSE 2325
-EXPOSE 2326
+EXPOSE 2323-2326
 
 VOLUME /machines
 WORKDIR /machines

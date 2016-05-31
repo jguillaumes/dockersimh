@@ -2,19 +2,26 @@ FROM jguillaumes/simh-allsims
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
 ENV PATH /simh-bin:$PATH
+ENV SIMULATOR pdp11
+ENV SIMDIR pdpbsd
+ENV OSIMAGE  RA81.000.gz
 
-WORKDIR /workdir
-RUN cp /simh-bin/pdp11 . && rm /simh-bin/* && cp pdp11 /simh-bin
-
-
-EXPOSE 2323
-EXPOSE 2324
 VOLUME /machines
+WORKDIR /machines
+RUN cp /simh-bin/$SIMULATOR /machines/$SIMULATOR && \
+    rm /simh-bin/* && \
+    mv /machines/$SIMULATOR /simh-bin && \
+    mkdir /image
+
+EXPOSE 2323-2324
+
+WORKDIR /image
+COPY /$SIMDIR/$OSIMAGE       /image/
+COPY /$SIMDIR/*.txt          /image/
+COPY /$SIMDIR/$SIMULATOR.ini /image/
+COPY /$SIMDIR/startup.sh     /startup.sh
+COPY /$SIMDIR/original-content /machines
 
 WORKDIR /machines
-COPY /pdp11bsd/pdp11.ini /machines
-COPY /pdp11bsd/RA81.000.gz /machines
-COPY /pdp11bsd/startup.sh /startup.sh 
 
 ENTRYPOINT ["/startup.sh"]
-

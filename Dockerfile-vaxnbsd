@@ -4,7 +4,8 @@ MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 ENV PATH /simh-bin:$PATH
 ENV SIM vax8600
 ENV SIMDIR vaxnbsd
-ENV OSIMAGE RAUSER.000.gz
+ENV OSIMAGE  RAUSER000.vhd.gz
+ENV EMPIMAGE RAUSEREMP.vhd.gz
 
 WORKDIR /workdir
 RUN cp /simh-bin/$SIM . && \
@@ -16,9 +17,10 @@ EXPOSE 2323
 EXPOSE 2324
 
 WORKDIR /image
-COPY /$SIMDIR/$SIM.ini /image/
-COPY /$SIMDIR/*.gz     /image/
-COPY /$SIMDIR/*.txt    /image/
+COPY /$SIMDIR/$SIM.ini	/image/
+COPY /$SIMDIR/$OSIMAGE	/image/
+COPY /$SIMDIR/$EMPIMAGE	/image/
+COPY /$SIMDIR/*.txt    	/image/
 COPY /$SIMDIR/startup.sh /startup.sh
 
 VOLUME /machines
