@@ -10,7 +10,7 @@
 ###########################################################################
 
 IMAGES="simh-pdpbsd simh-pdpv7 simh-vaxbsd simh-vaxnbsd simh-os8"
-TAG="latest"
+TAG="debian"
 
 if [ "$1" == "-ba" ]; then
     echo "Building the jguillaumes/simh-allsims:$TAG image."
