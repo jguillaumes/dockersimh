@@ -1,5 +1,5 @@
 FROM alpine:latest
-ARG sims="vax vax780 pdp11 pdp8"
+ARG sims="vax vax780 vax8600 pdp11 pdp8"
 
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
