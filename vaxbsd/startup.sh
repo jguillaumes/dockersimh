@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 OSIMAGE=RA81.000
 OSIMAGE2=RA81VHD.001
 SIMULATOR=vax780
-CONTSHELL="busybox sh"
+CONTSHELL="bash"
 
 cd /machines
 

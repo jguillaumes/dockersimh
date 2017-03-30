@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 OSIMAGE=RP04.000
 SIMULATOR=pdp11

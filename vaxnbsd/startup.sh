@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 
 OSIMAGE=RAUSER000.vhd
 PKGIMAGE=RAUSER001.vhd

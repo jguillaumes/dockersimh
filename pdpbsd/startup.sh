@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 OSIMAGE=RA81.000
 SIMULATOR=pdp11
-CONTSHELL="busybox sh"
+CONTSHELL="bash"
 
 unpackstuff () {
     if [ ! -f $1 ]; then

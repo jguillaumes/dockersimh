@@ -1,24 +1,31 @@
-FROM alpine:latest
-ARG sims="vax vax780 pdp11 pdp8"
+FROM debian:latest
+ARG sims="vax vax780 pdp11 pdp8 vax8600 pdp10"
 
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
-ENV BUILDPKGS "git gcc libc-dev make vde2-dev libpcap-dev linux-headers readline-dev"
-ENV RUNPKGS "net-tools vde2 vde2-libs libpcap nano readline bash"
+ENV BUILDPKGS "gcc git libvdeplug-dev libbluetooth-dev make"
+ENV RUNPKGS "net-tools vde2 libvdeplug2 nano"
 
-RUN apk --update add $RUNPKGS && rm -rf /var/cache/apk/*
+RUN apt-get update
 
 WORKDIR /workdir
 
-RUN apk --update add --virtual build-dependencies $BUILDPKGS && \
-	git clone git://github.com/simh/simh.git && \
-	cd simh && \
-	sed -e "s/\$(error Retry your build without specifying USE_NETWORK=1)/# SUPRESSED /g" makefile > makefile2 && \
-	make LIBPATH=/usr/lib INCPATH=/usr/include USE_NETWORK=1 -f makefile2 $sims && \
-	mkdir /simh-bin && cp BIN/* /simh-bin && \
-	apk del build-dependencies && \
-	rm -rf /workdir && \
-	rm -rf /var/cache/apk/* 
+COPY /deb/libpcap0.8-dev_1.8.1-3.nobt_amd64.deb /workdir/
+COPY /deb/libpcap0.8_1.8.1-3.nobt_amd64.deb	/workdir/
+
+RUN apt-get install -y libc6-dev && \
+    dpkg -i libpcap0.8-dev_1.8.1-3.nobt_amd64.deb libpcap0.8_1.8.1-3.nobt_amd64.deb && \
+    apt-get install -y $RUNPKGS  && \
+    apt-get install -y $BUILDPKGS && \
+    git clone git://github.com/simh/simh.git && \
+    cd simh && \
+    make -j 2 $sims && \
+    mkdir /simh-bin && cp BIN/* /simh-bin && \
+    apt-get remove -y $BUILDPKGS && \
+    apt-get remove -y gcc && \
+    apt-get clean -y && \
+    apt-get autoremove -y && \
+    rm -rf /workdir 
 
 ENV PATH /simh-bin:$PATH
 
@@ -27,4 +34,4 @@ EXPOSE 2323-2326
 VOLUME /machines
 WORKDIR /machines
 
-ENTRYPOINT ["busybox", "sh"]
+ENTRYPOINT ["bash"]

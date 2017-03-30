@@ -1,4 +1,4 @@
-FROM jguillaumes/simh-allsims
+FROM jguillaumes/simh-allsims:debian
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 
 ENV PATH /simh-bin:$PATH
