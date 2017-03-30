@@ -12,6 +12,7 @@ This repository contains files to build containerized versions of simh. There ar
 - Dockerfile-pdpbsd: Makes an image which contains the PDP-11 simulator and a ready to run BSD 2.11 image.
 - Dockerfile-vaxbsd: Makes an image which contains the VAX 11/780 simulator and a ready to run BSD 4.3 image.
 - Dockerfile-vaxnbsd: Makes an image which contains the VAX (Microvax 3900) simulator and a ready to run NetBSD 6.0 image.
+- Dockerfile-os8: Makes an image which contains the PDP-8 simulator and a ready to run OS/8 image.
 - Dockerfile: Makes an image which contains the PDP-11, VAX (Microvax 3900) and VAX780 simulators, with sample configuration files for PDP-11 and VAX and **no** image OS.
 
 The images are based upon the alpine Linux distribution. Alpine is a very lightweight distribution built around a statically linked busybox executable. The dockerfiles add to alpine the components needed to run and to build simh. The build time components are erased before completing the image to avoid bloating it.
@@ -28,15 +29,27 @@ The commands to build the images are as follows. Remember you can change the tag
 docker build -t jgullaumes/simh-allsims -f Dockerfile-allsims .
 docker build -t jgullaumes/simh-pdpbsd -f Dockerfile-pdpbsd .
 docker build -t jgullaumes/simh-vaxbsd -f Dockerfile-vaxbsd .
+docker build -t jgullaumes/simh-os8 -f Dockerfile-os8 .
 docker build -t jgullaumes/simh-vax [--build-arg sims="<simulator list>"] .
 
-# Remember to download the NetBSD disk before building the next image!
+# Remember to download the NetBSD disks before building the next image!
 docker build -t jgullaumes/simh-vaxnbsd -f Dockerfile-vaxnbsd .
 ```
 
-You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 pdp11"```.
+The NetBSD images can be downloaded from:
 
+[Operating system image](https://drive.google.com/open?id=0B2q64Hq0IZ1WNTZuajNFM3g3dnM)
+[Empty, formatted disk image](https://drive.google.com/open?id=0B2q64Hq0IZ1WRGhaREZWZThzM0U)
 
+Both images are necessary and must be put in the ```./vasnbsd``` directory.
+
+You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 vax8600 pdp11 pdp8"```.
+
+There is a shell script which builds all those images:
+
+buildall.sh [-ba]
+
+If you don't include the '-ba' switch, all the images EXCEPT simh-allsims will be built. If you include -ba then it will be included in the build.
 
 ## Adding guest OS images to simh-vax
 
