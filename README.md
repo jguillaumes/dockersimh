@@ -8,19 +8,34 @@ This software is a hobby project, done in my free time just to amuse myself. It 
 
 This repository contains files to build containerized versions of simh. There are several files available, which correspond to different images with different contents. At this moment, the list of Dockerfiles and images is:
 
-- Dockerfile-allsims: Makes an image which contains the binaries for all the simh simulators. This image does not contain neither configuration samples nor OS image files.
-- Dockerfile-pdpbsd: Makes an image which contains the PDP-11 simulator and a ready to run BSD 2.11 image.
-- Dockerfile-vaxbsd: Makes an image which contains the VAX 11/780 simulator and a ready to run BSD 4.3 image.
-- Dockerfile-vaxnbsd: Makes an image which contains the VAX (Microvax 3900) simulator and a ready to run NetBSD 6.0 image.
-- Dockerfile: Makes an image which contains the PDP-11, VAX (Microvax 3900) and VAX780 simulators, with sample configuration files for PDP-11 and VAX and **no** image OS.
+- **Dockerfile-allsims**: Makes an image which contains the binaries for all the simh simulators. This image does not contain neither configuration samples nor OS image files.
+- **Dockerfile-pdpbsd**: Makes an image which contains the PDP-11 simulator and a ready to run BSD 2.11 image.
+- **Dockerfile-vaxbsd**: Makes an image which contains the VAX 11/780 simulator and a ready to run BSD 4.3 image.
+- **Dockerfile-vaxnbsd**: Makes an image which contains the VAX (Microvax 3900) simulator and a ready to run NetBSD 6.0 image.
+- **Dockerfile-os8**: Makes an image which contains the PDP-8 simulator and a ready to run OS/8 image.
+- **Dockerfile**: Makes an image which contains the PDP-11, VAX (Microvax 3900) and VAX780 simulators, with sample configuration files for PDP-11 and VAX and **no** image OS.
 
-The images are based upon the alpine Linux distribution. Alpine is a very lightweight distribution built around a statically linked busybox executable. The dockerfiles add to alpine the components needed to run and to build simh. The build time components are erased before completing the image to avoid bloating it.
+There are two versions of the images, based on different Linux distributions and implemented in two different git branches. They *should* match but this is not guaranteed.
+
+### ```master``` branch
+
+The images are based upon the alpine Linux distribution. Alpine is a very lightweight distribution built around a statically linked busybox executable. The dockerfiles add to alpine the components needed to run and to build simh. The build time components are erased before completing the image to avoid bloating it. This distribution uses the ```mulc``` library instead of ```glibc```. SIMH console handle has some incompatibility with that library, the most visible point being SIMH does not show its prompt.
+
+### ```debian``` branch
+
+The images are based upon the debian distribution. That base image is much bigger, but provides more content and, what is more important, is based on the standard glibc. The shell used is the standard ```bash``` shell.
+
+The debian ```libpcap``` packages include bluetooth support. For some reason, that requires a container loading libpcap must be run as privileged. To avoid that, the debian branch includes two ```.deb``` files with libpcap built without bluetooth.
 
 ## Building the images
 
 You shoud build first the image from Dockerfile-allsims, since it is needed to build the other images. You can select any tag for the image, but please remember to update the other dockerfiles to reference the one you chose. The default is ```jguillaumes/simh-allsims```.
 
-This repository contains the compressed OS images for BSD 2.11 for the PDP-11 and BSD 4.3 for the VAX, but it **does not** contain the NetBSD image, since it is quite big (about 260MB). If you want to build the NetBSD container you can download the disk image using this link: https://drive.google.com/open?id=0B2q64Hq0IZ1WajBwNldWS1hValk
+This repository contains the compressed OS images for BSD 2.11 for the PDP-11 and BSD 4.3 for the VAX, but it **does not** contain the NetBSD image, since it is quite big (about 260MB). If you want to build the NetBSD container you can download the disk image and the empty volume template using these two links:
+
+- https://drive.google.com/open?id=0B2q64Hq0IZ1WNTZuajNFM3g3dnM
+
+- https://drive.google.com/open?id=0B2q64Hq0IZ1WRGhaREZWZThzM0U
 
 The commands to build the images are as follows. Remember you can change the tags as you wish.
 
@@ -28,15 +43,20 @@ The commands to build the images are as follows. Remember you can change the tag
 docker build -t jgullaumes/simh-allsims -f Dockerfile-allsims .
 docker build -t jgullaumes/simh-pdpbsd -f Dockerfile-pdpbsd .
 docker build -t jgullaumes/simh-vaxbsd -f Dockerfile-vaxbsd .
+docker build -t jgullaumes/simh-os8 -f Dockerfile-os8 .
 docker build -t jgullaumes/simh-vax [--build-arg sims="<simulator list>"] .
 
-# Remember to download the NetBSD disk before building the next image!
+# Remember to download the NetBSD disks before building the next image!
 docker build -t jgullaumes/simh-vaxnbsd -f Dockerfile-vaxnbsd .
 ```
 
-You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 pdp11"```.
+You can optionally specify the list of simulators you want to be available in simh-vax specifying it as the optional parameter ```--build-args```. The default is ```"vax vax780 vax8600 pdp11 pdp8"```.
 
+There is a shell script which builds all those images:
 
+buildall.sh [-ba]
+
+If you don't include the ```-ba``` switch, all the images EXCEPT simh-allsims will be built. If you include -ba then it will be included in the build.
 
 ## Adding guest OS images to simh-vax
 
