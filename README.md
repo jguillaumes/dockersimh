@@ -54,7 +54,7 @@ You can optionally specify the list of simulators you want to be available in si
 
 There is a shell script which builds all those images:
 
-buildall.sh [-ba]
+```buildall.sh [-ba]```
 
 If you don't include the ```-ba``` switch, all the images EXCEPT simh-allsims will be built. If you include -ba then it will be included in the build.
 
