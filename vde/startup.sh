@@ -3,7 +3,7 @@
 
 if [[ "$VDEPLUG_PWD" != "" ]]; then
     echo "*** Changing vdeplug password as specified by VDEPLUG_PWD ***"
-    echo "vdeuser:$VDEUSER_PWD" | chpasswd
+    echo "vdeuser:$VDEPLUG_PWD" | chpasswd
 fi
 
 chown vdeplug /vde.ctl
