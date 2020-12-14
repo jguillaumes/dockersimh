@@ -40,7 +40,7 @@ if [ -f $OSIMAGE1 -a $OSIMAGE2 ]; then
 	exec $SIMULATOR
 else
     if [ -f original-content ]; then
-	if [ "$SIMH_USE_CONTAINER" == "yes" ]; then
+	if [ "$SIMH_USE_CONTAINER"=="yes" ]; then
 	    echo "SIMH_USE_CONTAINER=$SIMH_USE_CONTAINER, using container storage"
 	    echo "Copying distribution files..."
 	    provision_and_run
