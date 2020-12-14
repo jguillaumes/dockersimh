@@ -1,15 +1,18 @@
-FROM jguillaumes/simh-allsims
-MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+FROM jguillaumes/simh-allsims:1.3-alpine
+
+LABEL version="2.3-alpine"
+LABEL description="pdp11 simh simulation with BSD image"
+LABEL maintainer="Jordi Guillaumes Pons <jguillaumes@gmail.com>"
 
 ENV PATH /simh-bin:$PATH
 ENV SIMULATOR pdp11
 ENV SIMDIR pdpbsd
 ENV OSIMAGE  RA81.000.gz
-
+    
 VOLUME /machines
 WORKDIR /machines
 RUN cp /simh-bin/$SIMULATOR /machines/$SIMULATOR && \
-    rm /simh-bin/* && \
+    rm -r /simh-bin/* && \
     mv /machines/$SIMULATOR /simh-bin && \
     mkdir /image
 

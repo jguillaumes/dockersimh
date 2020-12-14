@@ -1,4 +1,4 @@
-FROM jguillaumes/simh-allsims
+FROM jguillaumes/simh-allsims:1.3-alpine
 MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
 ARG sims="vax vax780 pdp11"
 

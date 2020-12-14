@@ -1,7 +1,9 @@
 FROM alpine:latest
 ARG sims="vax vax780 vax8600 pdp11 pdp8"
 
-MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+LABEL version="1.3-alpine"
+LABEL description="Selected simh simulations"
+LABEL maintainer="Jordi Guillaumes Pons <jguillaumes@gmail.com>"
 
 ENV BUILDPKGS "git gcc libc-dev make vde2-dev libpcap-dev linux-headers readline-dev"
 ENV RUNPKGS "net-tools vde2 vde2-libs libpcap nano readline bash"
@@ -15,7 +17,7 @@ RUN apk --update add --virtual build-dependencies $BUILDPKGS && \
 	cd simh && \
 	sed -e "s/\$(error Retry your build without specifying USE_NETWORK=1)/# SUPRESSED /g" makefile > makefile2 && \
 	make LIBPATH=/usr/lib INCPATH=/usr/include USE_NETWORK=1 -f makefile2 $sims && \
-	mkdir /simh-bin && cp BIN/* /simh-bin && \
+	mkdir /simh-bin && cp -r BIN/* /simh-bin && \
 	apk del build-dependencies && \
 	rm -rf /workdir && \
 	rm -rf /var/cache/apk/* 

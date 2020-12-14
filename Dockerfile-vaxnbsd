@@ -1,5 +1,8 @@
-FROM jguillaumes/simh-allsims
-MAINTAINER Jordi Guillaumes Pons <jg@jordi.guillaumes.name>
+FROM jguillaumes/simh-allsims:1.3-alpine
+
+LABEL version="2.3-alpine"
+LABEL description="vax simh simulation with NetBSD image"
+LABEL maintainer="Jordi Guillaumes Pons <jguillaumes@gmail.com>"
 
 ENV PATH /simh-bin:$PATH
 ENV SIM vax8600
@@ -9,7 +12,7 @@ ENV EMPIMAGE RAUSEREMP.vhd.gz
 
 WORKDIR /workdir
 RUN cp /simh-bin/$SIM . && \
-    rm /simh-bin/* && \
+    rm -r /simh-bin/* && \
     cp $SIM /simh-bin && \
     mkdir /image
 
