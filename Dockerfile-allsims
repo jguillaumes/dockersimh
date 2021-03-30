@@ -16,7 +16,7 @@ WORKDIR /workdir
 RUN apt-get install -y libc6-dev libpcap-dev && \
     apt-get install -y $RUNPKGS  && \
     apt-get install -y $BUILDPKGS && \
-    git clone git://github.com/simh/simh.git && \
+    git clone --depth 1 --single-branch git://github.com/simh/simh.git && \
     cd simh && \
     make -j 2 $sims && \
     mkdir /simh-bin && cp -r BIN/* /simh-bin && \
