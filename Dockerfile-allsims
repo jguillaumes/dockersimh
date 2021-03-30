@@ -18,7 +18,7 @@ RUN apt-get install -y libc6-dev libpcap-dev && \
     apt-get install -y $BUILDPKGS && \
     git clone --depth 1 --single-branch git://github.com/simh/simh.git && \
     cd simh && \
-    make -j 2 $sims && \
+    make $sims && \
     mkdir /simh-bin && cp -r BIN/* /simh-bin && \
     apt-get remove -y $BUILDPKGS && \
     apt-get remove -y gcc && \
