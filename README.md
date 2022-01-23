@@ -17,6 +17,16 @@ This repository contains files to build containerized versions of simh. There ar
 
 There are two versions of the images, based on different Linux distributions and implemented in two different git branches. They *should* match but this is not guaranteed.
 
+Since version 3.1, the alpine version will no longer be developed. The debian version will be generated for multiple architectures. The actual list of docker platforms they will run is:
+
+- amd64 (aka "64 bit Intel x86")
+- arm64 (ie, Apple Silicon)
+- arm/v7 (ie, the Raspberry Pi)
+- s390x (IBM z/Architecture, oh yeah!)
+
+The "latest" tag will point to the latest debian build, and will be also multiplatform.
+
+
 ### ```master``` branch
 
 The images are based upon the alpine Linux distribution. Alpine is a very lightweight distribution built around a statically linked busybox executable. The dockerfiles add to alpine the components needed to run and to build simh. The build time components are erased before completing the image to avoid bloating it. This distribution uses the ```mulc``` library instead of ```glibc```. SIMH console handle has some incompatibility with that library, the most visible point being SIMH does not show its prompt.
