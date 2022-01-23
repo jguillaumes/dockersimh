@@ -1,7 +1,7 @@
 #/bin/sh
 
 ###########################################################################
-# Build all the simh images, optionally including the base -allsims image
+# Build all the machine specific images
 #
 # Usage: buildall.sh [-ba]
 # 
@@ -15,6 +15,7 @@ LOADIMG="linux/arm64"
 TAGS="debian latest 3.1-debian 3.1 multiarch"
 REPOID="jguillaumes"
 PULLTAG="debian"
+VERSION="3.1-debian"
 
 generate_tags() {
     #+
@@ -33,18 +34,11 @@ generate_tags() {
 
 LOADARG="--push"
 
-if [ "$1" == "-ba" ]; then
-    echo "Building the $REPOID/simh-allsims: image for the $ARCHS architectures."
-    TAGARGS=$(generate_tags "simh_allsims" "$TAGS")
-    docker buildx build $LOADARG --platform=$ARCHS $TAGARGS -f Dockerfile-allsims .
-    docker pull jguillaumes/simh-allsims:$PULLTAG
-fi
-
 for i in $IMAGES; do
     FILESUF=`echo $i | cut -d'-' -f 2`
     TAGARGS=$(generate_tags $i "$TAGS")
     echo "Building image: $REPOID/$i based on Dockerfile-$FILESUF for the $ARCHS architectures"
-    docker buildx build  $LOADARG --platform=$ARCHS $TAGARGS -f Dockerfile-$FILESUF .
+    docker buildx build  --build-arg version=$VERSION $LOADARG --platform=$ARCHS $TAGARGS -f Dockerfile-$FILESUF .
     docker pull jguillaumes/$i:$PULLTAG
 done
 

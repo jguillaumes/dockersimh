@@ -1,6 +1,6 @@
 FROM debian:latest
 ARG sims="vax vax780 pdp11 pdp8 vax8600 pdp10"
-ARG version="3.0-debian" 
+ARG version="3.1-debian" 
 
 LABEL version="$version"
 LABEL description="Selected SIMH simulators"
