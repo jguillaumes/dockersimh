@@ -3,3 +3,5 @@ test/**
 
 vaxbsd/printer.txt
 vaxbsd/vax780-xu.mac
+docker
+.DS_Store

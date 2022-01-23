@@ -10,15 +10,41 @@
 ###########################################################################
 
 IMAGES="simh-pdpbsd simh-pdpv7 simh-vaxbsd simh-vaxnbsd simh-os8"
-TAG="debian"
+ARCHS="linux/arm64,linux/amd64,linux/arm/v7,linux/s390x"
+LOADIMG="linux/arm64"
+TAGS="debian latest 3.1-debian 3.1 multiarch"
+REPOID="jguillaumes"
+PULLTAG="debian"
+
+generate_tags() {
+    #+
+    # $1: Base name
+    # $2: List space-separated tags
+    #-
+    tags=""
+    # echo $2
+    for tag in $2; do
+        # echo $tag
+        tags="-t $REPOID/$1:$tag $tags" 
+    done
+    echo $tags
+}
+
+
+LOADARG="--push"
 
 if [ "$1" == "-ba" ]; then
-    echo "Building the jguillaumes/simh-allsims:$TAG image."
-    docker build -t jguillaumes/simh-allsims:$TAG -f Dockerfile-allsims .
+    echo "Building the $REPOID/simh-allsims: image for the $ARCHS architectures."
+    TAGARGS=$(generate_tags "simh_allsims" "$TAGS")
+    docker buildx build $LOADARG --platform=$ARCHS $TAGARGS -f Dockerfile-allsims .
+    docker pull jguillaumes/simh-allsims:$PULLTAG
 fi
 
 for i in $IMAGES; do
     FILESUF=`echo $i | cut -d'-' -f 2`
-    echo "Building image: jguillaumes/$i:$TAG based on Dockerfile-$FILESUF"
-    docker build -t jguillaumes/$i:$TAG -f Dockerfile-$FILESUF .
+    TAGARGS=$(generate_tags $i "$TAGS")
+    echo "Building image: $REPOID/$i based on Dockerfile-$FILESUF for the $ARCHS architectures"
+    docker buildx build  $LOADARG --platform=$ARCHS $TAGARGS -f Dockerfile-$FILESUF .
+    docker pull jguillaumes/$i:$PULLTAG
 done
+
