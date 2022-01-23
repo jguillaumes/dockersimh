@@ -1,6 +1,7 @@
-FROM jguillaumes/simh-allsims:1.3-debian
+ARG version="3.0-debian"
+FROM jguillaumes/simh-allsims:$version
 
-LABEL version="2.3-debian"
+LABEL version="$version"
 LABEL description="vax (8600) SIMH simulator with NetBSD image"
 LABEL maintainer="Jordi Guillaumes Pons <jguillaumes@gmail.com>"
 

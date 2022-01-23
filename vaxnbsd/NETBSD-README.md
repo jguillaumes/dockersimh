@@ -2,8 +2,7 @@ Welcome to the containerized NetBSD VAX 6.1.5!
 
 This file describes the initial (as shipped) OS configuration.
 
-KERNEL
-======
+# KERNEL
 
 The default kernel is tailored to be run under a vax 11/780 or vax 8600 
 simulator. In both cases, the system disk should be MSCP based ("RA" 
@@ -24,8 +23,7 @@ The configuration files used to build netbsd.8600 and netbsd.3900 are in this
 same directory (/root) as VAX8600 and MV3900. If you grab a copy of the source
 you can copy them to /usr/src/sys/arch/vax/conf and proceed from there.
 
-NETWORKING
-==========
+# NETWORKING
 
 The image starts networking and configures the default device, ne0 or qe0 
 depending on if it has been booted using the vax or the vax8600 simulator. 
@@ -43,15 +41,17 @@ is configured statically with these parameters:
 You should AT LEAST change the IP address to avoid potential collisions if you
 create more than one container. The configuration is in the files
 
+```
 /etc/ifconfig.de0
 /etc/ifconfig.qe0
+```
 
 The default route (and, actually, the subnet) will be OK if you are using the
 default docker container network settings. If you need to change it, refer
 to the file:
-
+```
 /etc/mygate
-
+```
 Those parameters can be set up alternatively in /etc/rc.conf
 
 The SSH server is disabled (it is really slow under a VAX simulator). The
@@ -59,29 +59,27 @@ TELNET and FTP servers are enabled. You may want to disable them in
 /etc/inetd.conf. To enable SSHD modify /etc/rc.conf
 
 
-SOFTWARE
-========
+# SOFTWARE
 
 There are some installed packages, including some editors. Use the command 
 pkg_info to find what's here.
 
-SOURCES
-=======
+# SOURCES
 
 Neither the system nor the PKGSRC sources are included. The /usr/src and 
 /usr/pkgsrc directories have been created, and the /etc/fstab file 
 contains commented out entries to mount additional storage to contain the 
 sources. You will have to install them yourself.
 
-BASIC ADMINISTRATION
-====================
+# BASIC ADMINISTRATION
 
 To add an user:
-
+```
 # useradd -m username
+```
 
 To make an user administrator (so he can do 'su'):
-
+```
 # usermod -G wheel username
-
+```
 
