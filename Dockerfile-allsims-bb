@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install $RUNPKGS
 WORKDIR /workdir
 
 RUN apt-get update && apt-get install  $BUILDPKGS && \
-	git clone git://github.com/simh/simh.git && \
+	git clone https://github.com/simh/simh.git && \
 	cd simh && \
 	sed -e "s/\$(error Retry your build without specifying USE_NETWORK=1)/# SUPRESSED /g" makefile > makefile2 && \
 	make LIBPATH=/usr/lib INCPATH=/usr/include USE_NETWORK=1 -f makefile2 && \
