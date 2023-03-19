@@ -7,7 +7,7 @@ LABEL description="Selected SIMH simulators"
 LABEL maintainer="Jordi Guillaumes Pons <jguillaumes@gmail.com>"
 
 ENV BUILDPKGS "gcc git libvdeplug-dev libbluetooth-dev make"
-ENV RUNPKGS "net-tools vde2 libvdeplug2 nano"
+ENV RUNPKGS "net-tools vde2 libvdeplug2 nano libedit2"
 
 RUN apt-get update
 
